@@ -25,42 +25,54 @@ int main(int argc, char* argv[])
     char c;
     unsigned row = 0;
     std::string substring = "";
-    for (uint16_t i=0; i < arguments.value().X.size(); i++) {
+    unsigned int i = 0, absi = 0;
+    for (; i < arguments.value().X.size();i++) {
         arguments.value().file.get(c);
         substring.push_back(c);
-        if(c == '\n')
-            row++;
+        
     }
-
+    i = 0;
     const uint32_t xHash = hashString(arguments.value().X);
     uint32_t subHash;
 
-    unsigned int i = 0, absi = (unsigned int)arguments.value().X.size();
-    int posDist = -1, posSub = -INT_MAX, rowDist = row;
+ 
+    int posDist = -1, absPosSub = -INT_MAX, rowDist = 0;
 
     while (arguments.value().file) {
-
-        //Rain-Karp algorithm
+        //std::cout << absi << " " << i << " " << row << " " << posDist << " " << rowDist<<"\n";
+       // std::cout << absi << " " << i << " " << row << "\n";
+        //Rain-Karp search algorithm
         subHash = hashString(substring);
         if (xHash == subHash && arguments.value().X == substring) {
-            if (absi - posSub - arguments.value().X.size() <= arguments.value().N) {
+            //std::cout << row << " " << i << "\n";
+
+            if (absi - absPosSub  <= arguments.value().N) {
 
                 if (posDist >= 0) {
-                    std::cout << rowDist << " " << posDist << "\n";
+                    std::cout << rowDist << " " << posDist  << "\n";
                     posDist = -1;
                 }
-                std::cout << row << " " << i << "\n";
+                absPosSub = absi;
+                std::cout << row << " " << i  << "\n";
             }
             else {
+                //std::cout << absPosSub << '\n';
+                absPosSub = absi;
                 posDist = i;
                 rowDist = row;
+
+
             }
-            posSub = i;
+            
         }
 
         // get new char
         arguments.value().file.get(c);
-        if (c == '\n') {
+
+        //counting
+        i++;
+        absi++;
+        if (substring[0] == '\n') {
             row++;
             i = 0;
         }
@@ -68,8 +80,7 @@ int main(int argc, char* argv[])
         // shift substring by one char
         substring.push_back(c);
         substring.erase(substring.begin());
-        i++;
-        absi++;
+
     }
 
   
