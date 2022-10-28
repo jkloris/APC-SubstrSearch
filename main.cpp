@@ -16,7 +16,6 @@ struct args
 
 uint32_t hashString(std::string str);
 std::optional<args> getArgs(int argc, char* argv[]);
-uint32_t hashModifyString(std::string str, uint32_t hash, char first); //obsolite
 
 int main(int argc, char* argv[])
 {
@@ -37,7 +36,7 @@ int main(int argc, char* argv[])
     for (; i < argumen.X.size();i++) {
         argumen.file.get(c);
 
-        if (int(c) < 0 || int(c) > 127) {
+        if (int(c) <= 0 || int(c) > 127) {
             std::cout << int(c) << " " << c << '\n';
             return EXIT_FAILURE;
         }
@@ -52,7 +51,7 @@ int main(int argc, char* argv[])
     int posDist = -1, absPosSub = -INT_MAX, rowDist = 0;
 
 
-    char buffer[32768];
+    char buffer[16384];
     std::streamsize bufferSize = std::size(buffer);
     size_t gc = 0;
 
@@ -89,7 +88,7 @@ int main(int argc, char* argv[])
             // get new char
             //argumen.file.get(c);
             c = buffer[buffi];
-            if (int(c) < 0 || int(c) > 127)
+            if (int(c) <= 0 || int(c) > 127)
                 return EXIT_FAILURE;
 
             //counting
@@ -117,9 +116,29 @@ int main(int argc, char* argv[])
         argumen.file.read(buffer, bufferSize);
         gc = argumen.file.gcount();
         buffi = 0;
+        
 
     }
      
+    //Rain-Karp search algorithm for last char
+    if (xHash == subHash && argumen.X == substring) {
+
+        if (absi - absPosSub <= argumen.N) {
+
+            if (posDist >= 0) {
+                std::cout << rowDist << " " << posDist << "\n";
+                posDist = -1;
+            }
+            absPosSub = absi;
+            std::cout << row << " " << i << "\n";
+        }
+        else {
+            absPosSub = absi;
+            posDist = i;
+            rowDist = row;
+        }
+
+    }
   
 	return 0;
 }
@@ -163,15 +182,6 @@ uint32_t hashString(std::string str)
     {
         hash += str[i];
     }
-
-    return hash;
-}
-
-//Obsolite
-uint32_t hashModifyString(std::string str, uint32_t hash, char first)
-{
-        hash -= first;
-        hash += str[str.size() - 1];
 
     return hash;
 }
