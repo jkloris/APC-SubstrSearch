@@ -4,12 +4,16 @@
 #include <string>
 #include <fstream>
 #include <climits>
-
 struct args
 {
     std::ifstream file;
     std::string X;
     uint32_t N{};
+};
+
+struct linkList {
+    char c;
+    struct linkList* next; 
 };
 
 
@@ -33,6 +37,8 @@ int main(int argc, char* argv[])
     std::string substring(argumen.X.size(), '0');
 
     unsigned long absi = 0;
+    linkList *akt = new linkList(), * begin = new linkList();
+    begin = akt;
     for (; i < argumen.X.size();i++) {
         argumen.file.get(c);
 
@@ -40,10 +46,18 @@ int main(int argc, char* argv[])
             std::cout << int(c) << " " << c << '\n'; 
             return EXIT_FAILURE;
         }
-
         substring[i] = c;
-    }
+            akt->c = c;
+        if (i < argumen.X.size() - 1) {
+            akt->next = new linkList();
+            akt = akt->next;
+        }
 
+    }
+    akt->next = begin;
+
+
+    
     i = 0;
     const uint32_t xHash = hashString(argumen.X); 
     uint32_t subHash = hashString(substring);
@@ -64,23 +78,33 @@ int main(int argc, char* argv[])
         while (buffi < gc) {
 
             //Rain-Karp search algorithm
-            if (xHash == subHash && argumen.X == substring) {
+            if (xHash == subHash ) {
 
-                if (absi - absPosSub  <= argumen.N) {
-
-                    if (posDist >= 0) {
-                        std::cout << rowDist << " " << posDist << "\n";
-                        posDist = -1;
-                    }
-                    absPosSub = absi;
-                    std::cout << row << " " << i  << "\n";
+                akt = begin;
+                for (shifti = 0; shifti < substring.size() ; shifti++) {
+                    if (akt->c != argumen.X[shifti])
+                        break;
+                    akt = akt->next;
                 }
-                else {
+                if (shifti == argumen.X.size()) {
 
-                    absPosSub = absi;
-                    posDist = i;
-                    rowDist = row;
 
+                    if (absi - absPosSub  <= argumen.N) {
+
+                        if (posDist >= 0) {
+                            std::cout << rowDist << " " << posDist << "\n";
+                            posDist = -1;
+                        }
+                        absPosSub = absi;
+                        std::cout << row << " " << i  << "\n";
+                    }
+                    else {
+
+                        absPosSub = absi;
+                        posDist = i;
+                        rowDist = row;
+
+                    }
                 }
             
             }
@@ -91,25 +115,27 @@ int main(int argc, char* argv[])
             if (int(c) <= 0 || int(c) > 127)
                 return EXIT_FAILURE;
 
+           
+
+            // shift substring by one char
+            first = begin->c;
+            begin->c = c;
+            begin = begin->next;
+        
+
+
             //counting
             i++;
             absi++;
             buffi++;
-            if (substring[0] == '\n') {
+            if (first == '\n') {
                 row++;
                 i = 0;
             }
 
-            // shift substring by one char
-             first = substring[0];
-        
-            for (shifti = 0; shifti < substring.size() - 1; shifti++) {
-                substring[shifti] = substring[shifti + 1];
-            }
-            substring[shifti] = c;
 
             subHash -= first;
-            subHash += substring[substring.size() - 1];
+            subHash += c;
 
         }
         
@@ -137,6 +163,14 @@ int main(int argc, char* argv[])
             posDist = i;
             rowDist = row;
         }
+
+    }
+
+    //Freeing memory
+    for (shifti = 0; shifti < substring.size(); shifti++) {
+        akt = begin;
+        begin = begin->next;
+        delete akt;
 
     }
   
