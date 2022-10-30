@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <climits>
+
 struct args
 {
     std::ifstream file;
@@ -37,7 +38,7 @@ int main(int argc, char* argv[])
     std::string substring(argumen.X.size(), '0');
 
     unsigned long absi = 0;
-    linkList *akt = new linkList(), * begin = new linkList();
+    linkList *akt = new linkList(), * begin ;
     begin = akt;
     for (; i < argumen.X.size();i++) {
         argumen.file.get(c);
@@ -92,7 +93,7 @@ int main(int argc, char* argv[])
                     if (absi - absPosSub  <= argumen.N) {
 
                         if (posDist >= 0) {
-                            std::cout << rowDist << " " << posDist << "\n";
+                           std::cout << rowDist << " " << posDist << "\n";
                             posDist = -1;
                         }
                         absPosSub = absi;
