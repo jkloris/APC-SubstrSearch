@@ -29,15 +29,15 @@ int main(int argc, char* argv[])
 
     //read first size of N chars
     char c = {}, first;
-    unsigned int row = 0, shifti = 0, buffi = 0;
+    unsigned int row = 0, shifti = 0, buffi = 0, i = 0;
     std::string substring(argumen.X.size(), '0');
 
-    unsigned int i = 0, absi = 0;
+    unsigned long absi = 0;
     for (; i < argumen.X.size();i++) {
         argumen.file.get(c);
 
         if (int(c) <= 0 || int(c) > 127) {
-            std::cout << int(c) << " " << c << '\n';
+            std::cout << int(c) << " " << c << '\n'; 
             return EXIT_FAILURE;
         }
 
@@ -48,8 +48,8 @@ int main(int argc, char* argv[])
     const uint32_t xHash = hashString(argumen.X); 
     uint32_t subHash = hashString(substring);
  
-    int posDist = -1, absPosSub = -INT_MAX, rowDist = 0;
-
+    int posDist = -1,  rowDist = 0;
+    long absPosSub = -INT_MAX;
 
     char buffer[16384];
     std::streamsize bufferSize = std::size(buffer);
@@ -155,13 +155,18 @@ std::optional<args> getArgs(int argc, char* argv[]) {
         return {};
 
     arguments.X = argv[2];
-    if (arguments.X.size() >= 256)
+    if (arguments.X.size() >= 256 || arguments.X.size() == 0)
         return {};
     //arguments.X = "dccbbdcddddaabaad\nadd"; //; TMP hardcoded 
 
-    int a;
+
+    uint32_t a;
     try {
-        a = std::stoi(argv[3]);
+        for (char* c = argv[3]; *c; c++)
+           if(!std::isdigit(*c))
+                throw(std::runtime_error(argv[3]));
+
+        a = std::stoul(argv[3]);
         if (a <= 0)
             throw(std::runtime_error(argv[3]));
     }
